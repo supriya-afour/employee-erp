@@ -1,18 +1,1 @@
-{
-  "1": {
-    "id": 1,
-    "first_name": "Burger",
-    "last_name": "qwqweqwe",
-    "email": "Tasty@gmail.com",
-    "phone_no": 123456789,
-    "level": "manager"
-  },
-  "2": {
-    "id": 1,
-    "first_name": "Burger",
-    "last_name": "asdasdasd",
-    "email": "Tasty@yahoo.com",
-    "phone_no": 123456789,
-    "level": "intern"
-  }
-}
+[{"id":1,"first_name":"Supriya","last_name":"barkund","email":"sidd@gmail.com","phone_no":9552267180,"level":"manager","manager":"NA","dob":"28-07-1994"},{"id":2,"first_name":"sonali","last_name":"barkund","email":"sonali@gmail.com","phone_no":9552267180,"level":"manager","manager":"NA","dob":""},{"id":1635226119839,"first_name":"sidd","last_name":"barkund","email":"sidd@gmail.com","phone_no":9552267180,"level":"developer","manager":"1","dob":"30-07-1994"},{"id":1635244321691,"first_name":"aaa","last_name":"barkund","email":"anita@gmail.com","phone_no":9552267180,"level":"intern","manager":3,"dob":""},{"id":1635244343462,"first_name":"bbb","last_name":"barkund","email":"anita@gmail.com","phone_no":9552267180,"level":"intern","manager":"1","dob":""}]

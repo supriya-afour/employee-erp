@@ -5,7 +5,6 @@ import { Request, Response, Router } from "express";
 import EmployeeService from "../services/employees.services";
 import { EmployeeData, Employee } from "../interfaces/employee.interface";
 import { EnumEmployee } from "../constants/enums";
-import { Employees } from "../interfaces/employees.interface";
 
 const employeeService = new EmployeeService();
 /**
@@ -30,31 +29,31 @@ export default class EmployeeController {
   public getEmployee = async (req: Request, res: Response) => {
     const id: number = parseInt(req.params.id, 10);
     try {
-      const employee: any = await employeeService.find(id);
-      if ((Object.keys(employee).length == 0) || (employee == undefined)) {
+      const employee: Employee = await employeeService.find(id);
+      if (employee === undefined || employee === null) {
         return res.status(404).json({ "error": `Employee not found with given id ${id}` });
       }
-      return res.status(200).json({ employee });
+      return res.status(200).json(employee);
     } catch (e: any) {
       return res.status(500).send(e.message);
     }
   }
 
-  // // POST employees
+  // // // POST employees
   public createEmployee = async (req: Request, res: Response) => {
     const isValidated = await this.validator(req, res);
     if (!isValidated) {
       try {
         const employee: EmployeeData = req.body;
-        const newEmployee = await employeeService.create(employee);
-        return res.status(201).json(newEmployee);
+        await employeeService.create(employee);
+        return res.status(201).json({"message": "Employee created"});
       } catch (e: any) {
         return res.status(500).send(e.message);
       }
     }
   }
 
-  // PUT employees/:id
+  // // PUT employees/:id
   public editEmployee = async (req: Request, res: Response) => {
     const id: number = parseInt(req.params.id, 10);
     const isValidated = await this.validator(req, res);
@@ -80,11 +79,12 @@ export default class EmployeeController {
   public deleteEmployee = async (req: Request, res: Response) => {
     try {
       const id: number = parseInt(req.params.id, 10);
-      const employee: Employee = await employeeService.remove(id);
-      if (!employee) {
-        return res.status(404).json({ "error": `Employee not found with given id ${id}` });
-      }
-      return res.status(201).json({ "message": `Employee deleted with id ${employee.id}` });
+      // const employee: Employee = await employeeService.remove(id);
+      await employeeService.remove(id);
+      // if (!employee) {
+        // return res.status(404).json({ "error": `Employee not found with given id ${id}` });
+      // }
+      return res.status(201).json({ "message": `Employee deleted with id ${id}` });
     } catch (e: any) {
       return res.status(500).send(e.message);
     }
@@ -110,7 +110,7 @@ export default class EmployeeController {
     const enums = Object.values(EnumEmployee)
     let validationError = false;
     
-    if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_no || !req.body.level || !req.body.reporter) {
+    if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_no || !req.body.level || !req.body.manager) {
       res.status(400).json({ "Error": "Please pass all required attributes in the body" });
       validationError = true;
     }

@@ -38,30 +38,30 @@ class EmployeeController {
             const id = parseInt(req.params.id, 10);
             try {
                 const employee = yield employeeService.find(id);
-                if ((Object.keys(employee).length == 0) || (employee == undefined)) {
+                if (employee === undefined || employee === null) {
                     return res.status(404).json({ "error": `Employee not found with given id ${id}` });
                 }
-                return res.status(200).json({ employee });
+                return res.status(200).json(employee);
             }
             catch (e) {
                 return res.status(500).send(e.message);
             }
         });
-        // // POST employees
+        // // // POST employees
         this.createEmployee = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const isValidated = yield this.validator(req, res);
             if (!isValidated) {
                 try {
                     const employee = req.body;
-                    const newEmployee = yield employeeService.create(employee);
-                    return res.status(201).json(newEmployee);
+                    yield employeeService.create(employee);
+                    return res.status(201).json({ "message": "Employee created" });
                 }
                 catch (e) {
                     return res.status(500).send(e.message);
                 }
             }
         });
-        // PUT employees/:id
+        // // PUT employees/:id
         this.editEmployee = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const id = parseInt(req.params.id, 10);
             const isValidated = yield this.validator(req, res);
@@ -87,11 +87,12 @@ class EmployeeController {
         this.deleteEmployee = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = parseInt(req.params.id, 10);
-                const employee = yield employeeService.remove(id);
-                if (!employee) {
-                    return res.status(404).json({ "error": `Employee not found with given id ${id}` });
-                }
-                return res.status(201).json({ "message": `Employee deleted with id ${employee.id}` });
+                // const employee: Employee = await employeeService.remove(id);
+                yield employeeService.remove(id);
+                // if (!employee) {
+                // return res.status(404).json({ "error": `Employee not found with given id ${id}` });
+                // }
+                return res.status(201).json({ "message": `Employee deleted with id ${id}` });
             }
             catch (e) {
                 return res.status(500).send(e.message);
@@ -116,7 +117,7 @@ class EmployeeController {
             const phoneReg = /^\d{10}$/;
             const enums = Object.values(enums_1.EnumEmployee);
             let validationError = false;
-            if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_no || !req.body.level || !req.body.reporter) {
+            if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_no || !req.body.level || !req.body.manager) {
                 res.status(400).json({ "Error": "Please pass all required attributes in the body" });
                 validationError = true;
             }

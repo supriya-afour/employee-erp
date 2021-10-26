@@ -14,36 +14,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const FileService_services_1 = __importDefault(require("./FileService.services"));
-const enums_1 = require("../constants/enums");
 class EmployeeService {
     constructor() {
         /**
          *
          */
-        this.employees = {
-            "1": {
-                "id": 1,
-                "first_name": "Supriya",
-                "last_name": "barkund",
-                "email": "supriya@gmail.com",
-                "phone_no": 1234567890,
-                "level": enums_1.EnumEmployee.MANAGER,
-                "reporter": "NA"
-            },
-            "2": {
-                "id": 2,
-                "first_name": "sonali",
-                "last_name": "barkund",
-                "email": "sonali@yahoo.com",
-                "phone_no": 1234567890,
-                "level": enums_1.EnumEmployee.MANAGER,
-                "reporter": "NA"
-            }
-        };
+        // private employees: Employees = {
+        //   "1": {
+        //     "id": 1,
+        //     "first_name": "Supriya",
+        //     "last_name": "barkund",
+        //     "email": "supriya@gmail.com",
+        //     "phone_no": 1234567890,
+        //     "level": EnumEmployee.MANAGER,
+        //     "reporter": "NA"
+        //   },
+        //   "2": {
+        //     "id": 2,
+        //     "first_name": "sonali",
+        //     "last_name": "barkund",
+        //     "email": "sonali@yahoo.com",
+        //     "phone_no": 1234567890,
+        //     "level": EnumEmployee.MANAGER,
+        //     "reporter": "NA"
+        //   }
+        // };
+        this.employees = [];
+        this.config = [];
         this.getAll = () => __awaiter(this, void 0, void 0, function* () {
             try {
-                // return this.fService.getData();
-                return Object.values(this.employees);
+                const jsonData = yield this.fService.getData();
+                this.employees = jsonData.filter((record) => record != null && record.manager != "NA");
+                return Object.assign({}, this.employees);
+                // return Object.entries(this.employees);
             }
             catch (e) {
                 throw e;
@@ -51,60 +54,81 @@ class EmployeeService {
         });
         this.find = (id) => __awaiter(this, void 0, void 0, function* () {
             try {
-                // const allUsers: Employees = await this.fService.getData();
-                // return allUsers[id];
-                return this.employees[id];
+                const allUsers = yield this.fService.getData();
+                // if (allUsers[id] == null || allUsers[id] == undefined) {
+                //   return []
+                // } else {
+                return allUsers[id];
+                // }
+                // return this.employees[id]
             }
             catch (e) {
                 throw e;
             }
         });
         this.create = (newEmployee) => __awaiter(this, void 0, void 0, function* () {
+            // try {
+            // const reporter_name: string = this.employees[parseInt(newEmployee.reporter)]
+            // const reporter_name: string = this.employees[parseInt(newEmployee.reporter)].first_name
+            // const id: number = new Date().valueOf();
+            // this.employees[id] = { id, ...newEmployee};
+            // this.employees[id].reporter = reporter_name;
+            // return this.employees[id];
+            // } catch (e) {
+            //   throw e;
+            // }
             try {
-                // const reporter_name: string = this.employees[parseInt(newEmployee.reporter)]
-                // const reporter_name: string = this.employees[parseInt(newEmployee.reporter)].first_name
+                const jsonData = yield this.fService.getData();
                 const id = new Date().valueOf();
-                this.employees[id] = Object.assign({ id }, newEmployee);
-                // this.employees[id].reporter = reporter_name;
-                return this.employees[id];
+                const newData = Object.assign({ id }, newEmployee);
+                jsonData.push(newData);
+                this.config = jsonData;
+                return this.fService.setData(this.config);
             }
             catch (e) {
                 throw e;
             }
-            // jsonFileData.employeeData.push(employees[id]);
-            // let data = JSON.stringify(this.employees[id]);
-            // const writeFile: employees = await fs.promises.writeFile("../../employeeData.json", data);
-            // return writeFile;
-            // const writeFile
-            // this.fService.setData(empData);
         });
         this.update = (id, employeeUpdate) => __awaiter(this, void 0, void 0, function* () {
-            const item = yield this.find(id);
+            // const item = await this.find(id);
             // if (!item) {
             //   return null;
             // }
-            this.employees[id] = Object.assign({ id }, employeeUpdate);
-            return this.employees[id];
-        });
-        this.remove = (id) => __awaiter(this, void 0, void 0, function* () {
+            // this.employees[id] = { id, ...employeeUpdate };
+            // return this.employees[id];
             try {
-                const foundEmployee = yield this.find(id);
-                delete this.employees[id];
-                return foundEmployee;
+                const jsonData = yield this.fService.getData();
+                jsonData[id] = Object.assign({ id }, employeeUpdate);
+                this.config = jsonData;
+                return this.fService.setData(this.config);
             }
             catch (e) {
                 throw e;
             }
-            // if (!foundEmployee) {
-            //   return null;
+        });
+        this.remove = (id) => __awaiter(this, void 0, void 0, function* () {
+            // try {
+            //   const foundEmployee: Employee = await this.find(id);
+            //   delete this.employees[id];
+            //   return foundEmployee;
+            // } catch (e:any) {
+            //   throw e;
             // }
-            // const emp = this.jsonFileData.employeeData;
-            // console.log("Emp1", this.jsonFileData.EmployeeData);
-            // delete this.jsonFileData.employeeData.item;
+            try {
+                const jsonData = yield this.fService.getData();
+                delete jsonData[id];
+                this.config = jsonData;
+                return this.fService.setData(this.config.filter((data) => data != null));
+            }
+            catch (e) {
+                throw e;
+            }
         });
         this.getSubordinate = (id) => __awaiter(this, void 0, void 0, function* () {
             try {
-                return Object.values(this.employees).filter((data) => data.reporter === id);
+                const jsonData = yield this.fService.getData();
+                return jsonData.filter((data) => data.manager == id.toString());
+                // return Object.values(this.employees).filter((data) => data.reporter === id);
             }
             catch (e) {
                 throw e;

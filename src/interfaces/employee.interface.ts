@@ -8,7 +8,8 @@ export interface EmployeeData {
   email: string;
   phone_no: number;
   level: EnumEmployee;
-  reporter: string;
+  manager: string;
+  dob?: string;
 }
 
 export interface Employee extends EmployeeData {
