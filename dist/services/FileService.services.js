@@ -16,7 +16,7 @@ class FileService {
     }
     setData(inputData) {
         console.log("Inside setData:", JSON.stringify(inputData));
-        promises_1.default.writeFile(this.jsonFile, JSON.stringify(inputData));
+        return promises_1.default.writeFile(this.jsonFile, JSON.stringify(inputData));
     }
 }
 exports.default = FileService;

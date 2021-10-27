@@ -24,7 +24,7 @@ class EmployeeController {
         this.getAllEmployees = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const employees = yield employeeService.getAll();
-                if (Object.keys(employees).length == 0) {
+                if (!employees) {
                     return res.status(404).json({ "error": "There are no employees in the database." });
                 }
                 return res.status(200).json(employees);
@@ -33,12 +33,12 @@ class EmployeeController {
                 return res.status(500).send(e.message);
             }
         });
-        // // GET employees/:id
+        // // // GET employees/:id
         this.getEmployee = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const id = parseInt(req.params.id, 10);
             try {
                 const employee = yield employeeService.find(id);
-                if (employee === undefined || employee === null) {
+                if (employee === undefined || employee === null || Object.keys(employee).length == 0) {
                     return res.status(404).json({ "error": `Employee not found with given id ${id}` });
                 }
                 return res.status(200).json(employee);
@@ -47,7 +47,7 @@ class EmployeeController {
                 return res.status(500).send(e.message);
             }
         });
-        // // // POST employees
+        // // // // POST employees
         this.createEmployee = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const isValidated = yield this.validator(req, res);
             if (!isValidated) {
@@ -61,7 +61,7 @@ class EmployeeController {
                 }
             }
         });
-        // // PUT employees/:id
+        // // // PUT employees/:id
         this.editEmployee = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const id = parseInt(req.params.id, 10);
             const isValidated = yield this.validator(req, res);
@@ -83,7 +83,7 @@ class EmployeeController {
                 }
             }
         });
-        // DELETE employees/:id
+        // // DELETE employees/:id
         this.deleteEmployee = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = parseInt(req.params.id, 10);

@@ -5,6 +5,7 @@ import { Request, Response, Router } from "express";
 import EmployeeService from "../services/employees.services";
 import { EmployeeData, Employee } from "../interfaces/employee.interface";
 import { EnumEmployee } from "../constants/enums";
+import { Employees } from "../interfaces/employeeObject.interface";
 
 const employeeService = new EmployeeService();
 /**
@@ -15,8 +16,8 @@ export default class EmployeeController {
   // GET employees
   public getAllEmployees = async (req: Request, res: Response) => {
     try {
-      const employees = await employeeService.getAll();
-      if (Object.keys(employees).length == 0) {
+      const employees: Employees= await employeeService.getAll();
+      if(!employees){
         return res.status(404).json({ "error": "There are no employees in the database." });
       }
       return res.status(200).json(employees);
@@ -25,12 +26,12 @@ export default class EmployeeController {
     }
   }
 
-  // // GET employees/:id
+  // // // GET employees/:id
   public getEmployee = async (req: Request, res: Response) => {
     const id: number = parseInt(req.params.id, 10);
     try {
-      const employee: Employee = await employeeService.find(id);
-      if (employee === undefined || employee === null) {
+      const employee = await employeeService.find(id);
+      if (employee === undefined || employee === null || Object.keys(employee).length == 0) {
         return res.status(404).json({ "error": `Employee not found with given id ${id}` });
       }
       return res.status(200).json(employee);
@@ -39,7 +40,7 @@ export default class EmployeeController {
     }
   }
 
-  // // // POST employees
+  // // // // POST employees
   public createEmployee = async (req: Request, res: Response) => {
     const isValidated = await this.validator(req, res);
     if (!isValidated) {
@@ -53,7 +54,7 @@ export default class EmployeeController {
     }
   }
 
-  // // PUT employees/:id
+  // // // PUT employees/:id
   public editEmployee = async (req: Request, res: Response) => {
     const id: number = parseInt(req.params.id, 10);
     const isValidated = await this.validator(req, res);
@@ -75,11 +76,11 @@ export default class EmployeeController {
     }
   }
 
-  // DELETE employees/:id
+  // // DELETE employees/:id
   public deleteEmployee = async (req: Request, res: Response) => {
     try {
       const id: number = parseInt(req.params.id, 10);
-      // const employee: Employee = await employeeService.remove(id);
+      // const employee = await employeeService.remove(id);
       await employeeService.remove(id);
       // if (!employee) {
         // return res.status(404).json({ "error": `Employee not found with given id ${id}` });

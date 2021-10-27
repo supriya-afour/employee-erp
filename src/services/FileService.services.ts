@@ -2,6 +2,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { Employee } from "../interfaces/employee.interface";
+import { Employees } from "../interfaces/employeeObject.interface";
 
 export default class FileService {
   private jsonFile: string;
@@ -18,6 +19,6 @@ export default class FileService {
 
   public setData(inputData: Employee[]) {
     console.log("Inside setData:", JSON.stringify(inputData));
-    fs.writeFile(this.jsonFile, JSON.stringify(inputData))
+    return fs.writeFile(this.jsonFile, JSON.stringify(inputData))
   }
 }
