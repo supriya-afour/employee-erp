@@ -13,12 +13,16 @@ export default class FileService {
     // this.jsonFileData = require(this.jsonFile);    
   }
 
-  public getData(): Promise<Employee[]> {
-    return fs.readFile(this.jsonFile).then((data) => JSON.parse(data.toString()) as Employee[])
+  public async getData(): Promise<Employee[]> {
+    return await fs.readFile(this.jsonFile)
+      .then((data) => {
+        return JSON.parse(data.toString()) as Employee[];
+      })
+
   }
 
-  public setData(inputData: Employee[]) {
+  public async setData(inputData: Employee[]) {
     console.log("Inside setData:", JSON.stringify(inputData));
-    return fs.writeFile(this.jsonFile, JSON.stringify(inputData))
+    return await fs.writeFile(this.jsonFile, JSON.stringify(inputData))
   }
 }

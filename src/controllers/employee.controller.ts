@@ -95,8 +95,7 @@ export default class EmployeeController {
     try {
       const id: number = parseInt(req.params.id, 10);
       const employees = await employeeService.getSubordinate(id);
-      console.log("employees", employees);
-      if(!employees || employees.length == 0) {
+      if(!employees || Object.keys(employees).length == 0) {
         return res.status(404).json({ "error": "There are no employees under this user id" });
       }
       return res.status(200).json(employees);

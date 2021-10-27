@@ -16,31 +16,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const FileService_services_1 = __importDefault(require("./FileService.services"));
 class EmployeeService {
     constructor() {
-        /**
-         *
-         */
-        // private employees: Employees = {
-        //   "1": {
-        //     "id": 1,
-        //     "first_name": "Supriya",
-        //     "last_name": "barkund",
-        //     "email": "supriya@gmail.com",
-        //     "phone_no": 1234567890,
-        //     "level": EnumEmployee.MANAGER,
-        //     "reporter": "NA"
-        //   },
-        //   "2": {
-        //     "id": 2,
-        //     "first_name": "sonali",
-        //     "last_name": "barkund",
-        //     "email": "sonali@yahoo.com",
-        //     "phone_no": 1234567890,
-        //     "level": EnumEmployee.MANAGER,
-        //     "reporter": "NA"
-        //   }
-        // };
-        // private employees: Employee[] = [];
-        this.config = [];
         this.getAll = () => __awaiter(this, void 0, void 0, function* () {
             // try {
             //   const jsonData = await this.fService.getData();
@@ -51,11 +26,15 @@ class EmployeeService {
             // } catch (e) {
             //   throw e
             // }
+            let config = [];
             return this.fService.getData()
                 .then((jsonData) => {
                 return jsonData.filter((data) => data != null);
             }).then((result) => {
-                return Object.assign({}, result);
+                for (const [key, value] of Object.entries(result)) {
+                    config[value.id] = value;
+                }
+                return Object.assign({}, config);
             }).catch(e => {
                 throw e;
             });
@@ -166,9 +145,13 @@ class EmployeeService {
             // } catch (e) {
             //   throw e;
             // }
+            let config = [];
             return this.fService.getData()
                 .then((result) => {
-                return Object.assign({}, result.filter((data) => data.manager == id.toString()));
+                for (const [key, value] of Object.entries(result.filter((data) => data.manager == id.toString()))) {
+                    config[value.id] = value;
+                }
+                return Object.assign({}, config);
             }).catch((e) => {
                 throw e;
             });

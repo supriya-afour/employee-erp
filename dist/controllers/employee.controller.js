@@ -87,7 +87,7 @@ class EmployeeController {
         this.deleteEmployee = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = parseInt(req.params.id, 10);
-                // const employee: Employee = await employeeService.remove(id);
+                // const employee = await employeeService.remove(id);
                 yield employeeService.remove(id);
                 // if (!employee) {
                 // return res.status(404).json({ "error": `Employee not found with given id ${id}` });
@@ -102,8 +102,7 @@ class EmployeeController {
             try {
                 const id = parseInt(req.params.id, 10);
                 const employees = yield employeeService.getSubordinate(id);
-                console.log("employees", employees);
-                if (!employees || employees.length == 0) {
+                if (!employees || Object.keys(employees).length == 0) {
                     return res.status(404).json({ "error": "There are no employees under this user id" });
                 }
                 return res.status(200).json(employees);

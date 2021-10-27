@@ -50,12 +50,15 @@ export default class EmployeeService {
     // } catch (e) {
     //   throw e
     // }
-
+    let config: Employee[] = [];
     return this.fService.getData()
       .then((jsonData) => {
         return jsonData.filter((data) => data != null)
       }).then((result) => {
-        return Object.assign({}, result);
+        for (const [key, value] of Object.entries(result)) {
+          config[value.id] = value;          
+        }
+        return Object.assign({}, config);
       }).catch(e => {
         throw e;
       })
@@ -176,10 +179,13 @@ export default class EmployeeService {
     // } catch (e) {
     //   throw e;
     // }
-
+    let config: Employee[] = [];
     return this.fService.getData()
       .then((result) => {
-        return Object.assign({}, result.filter((data) => data.manager == id.toString()))
+        for (const [key, value] of Object.entries(result.filter((data) => data.manager == id.toString()))) {
+          config[value.id] = value;          
+        }
+        return Object.assign({}, config)
       }).catch((e) => {
         throw e;
       })
