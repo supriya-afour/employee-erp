@@ -12,13 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const dotenv_1 = __importDefault(require("dotenv"));
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+dotenv_1.default.config();
 class FileService {
-    // private jsonFileData: any;
     constructor() {
-        this.jsonFile = path_1.default.join(__dirname, "../../employeeData.json");
-        // this.jsonFileData = require(this.jsonFile);    
+        if (process.env.ENVIRONMENT == "development") {
+            this.jsonFile = path_1.default.join(__dirname, "../../employeeData.json");
+        }
+        this.jsonFile = path_1.default.join(__dirname, "../../testCasesData.json");
     }
     getData() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -30,8 +33,7 @@ class FileService {
     }
     setData(inputData) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("Inside setData:", JSON.stringify(inputData));
-            return yield promises_1.default.writeFile(this.jsonFile, JSON.stringify(inputData));
+            return promises_1.default.writeFile(this.jsonFile, JSON.stringify(inputData));
         });
     }
 }

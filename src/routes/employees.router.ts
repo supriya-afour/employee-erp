@@ -2,8 +2,7 @@
  * Required External Modules and Interfaces
  */
 import EmployeeController from "../controllers/employee.controller"
-import { Router } from "express";
-
+import express, { Router } from "express";
 const empController = new EmployeeController();
 
 /**
@@ -22,6 +21,11 @@ export default class EmployeeRouter {
   }
 
   private setRoutes() {
+    // this.router.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+		// 	console.log({Method:req.method, Route:req.originalUrl});
+		// 	return next();
+		// });
+    this.router.get(`/level`, empController.getEmployeeLevel);
     this.router.get("/", empController.getAllEmployees);
     this.router.get("/:id", empController.getEmployee);
     this.router.post("/", empController.createEmployee);

@@ -1,5 +1,4 @@
 "use strict";
-// src/employees.service.ts
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -12,151 +11,138 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 const FileService_services_1 = __importDefault(require("./FileService.services"));
+const enums_1 = require("../constants/enums");
+const validationErrors_1 = require("../constants/validationErrors");
 class EmployeeService {
     constructor() {
-        this.getAll = () => __awaiter(this, void 0, void 0, function* () {
-            // try {
-            //   const jsonData = await this.fService.getData();
-            //   this.employees = jsonData.filter((record) => record != null && record.manager != "NA");
-            //   console.log(typeof Object.assign({}, this.employees));
-            //   return Object.assign({}, this.employees);
-            //   // return Object.entries(this.employees);
-            // } catch (e) {
-            //   throw e
-            // }
-            let config = [];
+        this.getAll = () => {
+            let emp = [];
             return this.fService.getData()
                 .then((jsonData) => {
-                return jsonData.filter((data) => data != null);
+                return jsonData.filter((data) => data !== null);
             }).then((result) => {
                 for (const [key, value] of Object.entries(result)) {
-                    config[value.id] = value;
+                    if (value.level == enums_1.EnumEmployee.MANAGER) {
+                        delete value.manager;
+                    }
+                    emp[value.id] = value;
                 }
-                return Object.assign({}, config);
+                return Object.assign({}, emp);
             }).catch(e => {
                 throw e;
             });
-        });
-        this.find = (id) => __awaiter(this, void 0, void 0, function* () {
-            // try {
-            //   const allUsers = await this.fService.getData();
-            //   // if (allUsers[id] == null || allUsers[id] == undefined) {
-            //   //   return []
-            //   // } else {
-            //   return allUsers[id];
-            //   // }
-            //   // return this.employees[id]
-            // } catch (e) {
-            //   throw e;
-            // }
+        };
+        this.find = (id) => {
             return this.fService.getData()
                 .then((jsonData) => {
-                return jsonData[id];
+                return jsonData.filter((data) => data.id === id)[0];
             }).catch(e => {
                 throw e;
             });
-        });
-        this.create = (newEmployee) => __awaiter(this, void 0, void 0, function* () {
-            // try {
-            // const reporter_name: string = this.employees[parseInt(newEmployee.reporter)]
-            // const reporter_name: string = this.employees[parseInt(newEmployee.reporter)].first_name
-            // const id: number = new Date().valueOf();
-            // this.employees[id] = { id, ...newEmployee};
-            // this.employees[id].reporter = reporter_name;
-            // return this.employees[id];
-            // } catch (e) {
-            //   throw e;
-            // }
-            // try {
-            //   const jsonData = await this.fService.getData();
-            //   const id: number = new Date().valueOf();
-            //   const newData = { id, ...newEmployee };
-            //   jsonData.push(newData);
-            //   this.config = jsonData;
-            //   return this.fService.setData(this.config);
-            // } catch (e) {
-            //   throw e;
-            // }
+        };
+        this.create = (newEmployeeData) => {
             return this.fService.getData()
                 .then((result) => {
                 const id = new Date().valueOf();
-                const newData = Object.assign({ id }, newEmployee);
-                result.push(newData);
-                // this.config = result;
-                return this.fService.setData(result);
+                const newEmployee = Object.assign({ id }, newEmployeeData);
+                result.push(newEmployee);
+                this.fService.setData(result);
+                return newEmployee;
             }).catch((e) => {
                 throw e;
             });
-        });
+        };
         this.update = (id, employeeUpdate) => __awaiter(this, void 0, void 0, function* () {
-            // const item = await this.find(id);
-            // if (!item) {
-            //   return null;
-            // }
-            // this.employees[id] = { id, ...employeeUpdate };
-            // return this.employees[id];
-            // try {
-            //   const jsonData = await this.fService.getData();
-            //   jsonData[id] = { id, ...employeeUpdate };
-            //   this.config = jsonData;
-            //   return this.fService.setData(this.config);
-            // } catch (e) {
-            //   throw e;
-            // }
             return this.fService.getData()
                 .then((result) => {
-                result[id] = Object.assign({ id }, employeeUpdate);
-                return this.fService.setData(result);
-            }).catch((e) => {
-                throw e;
-            });
-        });
-        this.remove = (id) => __awaiter(this, void 0, void 0, function* () {
-            // try {
-            //   const foundEmployee: Employee = await this.find(id);
-            //   delete this.employees[id];
-            //   return foundEmployee;
-            // } catch (e:any) {
-            //   throw e;
-            // }
-            // try {
-            //   const jsonData = await this.fService.getData();
-            //   delete jsonData[id];
-            //   this.config = jsonData;
-            //   return this.fService.setData(this.config.filter((data) => data != null));
-            // } catch (e) {
-            //   throw e;
-            // }
-            return this.fService.getData()
-                .then((result) => {
-                delete result[id];
-                return this.fService.setData(result.filter((data) => data != null));
-            }).catch((e) => {
-                throw e;
-            });
-        });
-        this.getSubordinate = (id) => __awaiter(this, void 0, void 0, function* () {
-            // try {
-            //   const jsonData = await this.fService.getData();
-            //   return jsonData.filter((data) => data.manager == id.toString())
-            //   // return Object.values(this.employees).filter((data) => data.reporter === id);
-            // } catch (e) {
-            //   throw e;
-            // }
-            let config = [];
-            return this.fService.getData()
-                .then((result) => {
-                for (const [key, value] of Object.entries(result.filter((data) => data.manager == id.toString()))) {
-                    config[value.id] = value;
+                const index = result.findIndex((data) => data.id === id);
+                if (index) {
+                    result[index] = Object.assign(Object.assign({}, result[index]), employeeUpdate);
+                    this.fService.setData(result);
                 }
-                return Object.assign({}, config);
+                return result[index];
             }).catch((e) => {
                 throw e;
             });
+        });
+        this.remove = (id) => {
+            return this.fService.getData()
+                .then((result) => {
+                const emp = result.filter((data) => data.id === id)[0];
+                if (emp) {
+                    this.fService.setData(result.filter((data) => data.id !== id));
+                }
+                return emp;
+            }).catch((e) => {
+                throw e;
+            });
+        };
+        this.getSubordinate = (id) => {
+            return this.fService.getData()
+                .then((result) => {
+                return result.filter((data) => data.manager === id.toString() && data.level != enums_1.EnumEmployee.MANAGER);
+            }).catch((e) => {
+                throw e;
+            });
+        };
+        this.getLevel = (query) => __awaiter(this, void 0, void 0, function* () {
+            let emp = [];
+            return this.fService.getData()
+                .then((result) => {
+                if (query === enums_1.EnumEmployee.DEVELOPER) {
+                    return result.filter((data) => data.level === enums_1.EnumEmployee.DEVELOPER && data !== null);
+                }
+                else if (query === enums_1.EnumEmployee.INTERN) {
+                    return result.filter((data) => data.level === enums_1.EnumEmployee.INTERN && data !== null);
+                }
+                else if (query === enums_1.EnumEmployee.TESTER) {
+                    return result.filter((data) => data.level === enums_1.EnumEmployee.TESTER && data !== null);
+                }
+                else
+                    for (const [key, value] of Object.entries(result)) {
+                        if (value.level == enums_1.EnumEmployee.MANAGER) {
+                            delete value.manager;
+                        }
+                        emp[value.id] = value;
+                    }
+                return result.filter((data) => data.level === enums_1.EnumEmployee.MANAGER && data !== null);
+            });
+            // .then((data) => {
+            //   for (const [key, value] of Object.entries(data)) {
+            //     emp[value.id] = value;
+            //   }
+            //   return Object.assign({}, emp);
+            // })
         });
         this.fService = new FileService_services_1.default();
     }
 }
 exports.default = EmployeeService;
+_a = EmployeeService;
+EmployeeService.validator = (employeeData, flow) => __awaiter(void 0, void 0, void 0, function* () {
+    const emailReg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const phoneReg = /^\d{10}$/;
+    const nameReg = /^[a-zA-Z ]+$/;
+    const enums = Object.values(enums_1.EnumEmployee);
+    if (flow === validationErrors_1.constants.METHOD_CREATE) {
+        if (!employeeData.first_name || !employeeData.last_name || !employeeData.email || !employeeData.phone_no || !employeeData.level || !employeeData.manager) {
+            return validationErrors_1.constants.FIELD_ERRORS;
+        }
+    }
+    if ((employeeData.first_name && !nameReg.test(employeeData.first_name)) || (employeeData.last_name && !nameReg.test(employeeData.last_name))) {
+        return validationErrors_1.constants.FIRST_LAST_NAME;
+    }
+    if (employeeData.email && !emailReg.test(employeeData.email)) {
+        return validationErrors_1.constants.EMAIL_ERROR;
+    }
+    if (employeeData.phone_no && !phoneReg.test(employeeData.phone_no)) {
+        return validationErrors_1.constants.PHONE_ERROR;
+    }
+    if (employeeData.level && !enums.includes(employeeData.level)) {
+        return validationErrors_1.constants.LEVEL_ERROR;
+    }
+    return '';
+});

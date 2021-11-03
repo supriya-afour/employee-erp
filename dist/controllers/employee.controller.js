@@ -13,19 +13,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const employees_services_1 = __importDefault(require("../services/employees.services"));
-const enums_1 = require("../constants/enums");
+const FileService_services_1 = __importDefault(require("../services/FileService.services"));
+const validationErrors_1 = require("../constants/validationErrors");
 const employeeService = new employees_services_1.default();
 /**
 * Controller Definitions
 */
 class EmployeeController {
     constructor() {
+        // GET employees by level
+        this.getEmployeeLevel = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const emp = yield employeeService.getLevel(req.query.type);
+                if (emp.length == 0) {
+                    res.status(404).json({ "Error": `There are no ${req.query.type}` });
+                }
+                res.status(200).json(emp);
+            }
+            catch (e) {
+                return res.status(500).send(e.message);
+            }
+        });
         // GET employees
         this.getAllEmployees = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const employees = yield employeeService.getAll();
                 if (!employees) {
-                    return res.status(404).json({ "error": "There are no employees in the database." });
+                    return res.status(404).json({ "error": validationErrors_1.constants.NO_EMPLOYEE });
                 }
                 return res.status(200).json(employees);
             }
@@ -39,7 +53,7 @@ class EmployeeController {
             try {
                 const employee = yield employeeService.find(id);
                 if (employee === undefined || employee === null || Object.keys(employee).length == 0) {
-                    return res.status(404).json({ "error": `Employee not found with given id ${id}` });
+                    return res.status(404).json({ "error": validationErrors_1.constants.NO_EMPLOYEE_FOUND });
                 }
                 return res.status(200).json(employee);
             }
@@ -47,52 +61,57 @@ class EmployeeController {
                 return res.status(500).send(e.message);
             }
         });
-        // // // // POST employees
+        // POST employees
         this.createEmployee = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const isValidated = yield this.validator(req, res);
+            const isValidated = yield employees_services_1.default.validator(req.body, validationErrors_1.constants.METHOD_CREATE);
             if (!isValidated) {
                 try {
                     const employee = req.body;
-                    yield employeeService.create(employee);
-                    return res.status(201).json({ "message": "Employee created" });
+                    const newEmp = yield employeeService.create(employee);
+                    return res.status(201).json(newEmp);
                 }
                 catch (e) {
                     return res.status(500).send(e.message);
                 }
             }
+            else {
+                return res.json({ "error": isValidated });
+            }
         });
-        // // // PUT employees/:id
+        // PUT employees/:id
         this.editEmployee = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const id = parseInt(req.params.id, 10);
-            const isValidated = yield this.validator(req, res);
+            const isValidated = yield employees_services_1.default.validator(req.body, validationErrors_1.constants.METHOD_EDIT);
             if (!isValidated) {
                 try {
                     const employeeUpdate = req.body;
-                    const existingEmployee = yield employeeService.find(id);
-                    // console.log(existingEmployee);
-                    if (!existingEmployee) {
-                        return res.status(404).json({ "error": `Employee not found with given id ${id}` });
+                    const newEmp = yield employeeService.update(id, employeeUpdate);
+                    if (!newEmp) {
+                        return res.status(404).json({ "error": validationErrors_1.constants.NO_EMPLOYEE_FOUND });
                     }
-                    const updatedEmployee = yield employeeService.update(id, employeeUpdate);
-                    return res.status(200).json(updatedEmployee);
-                    // const newEmployee = await employeeService.create(employeeUpdate);
-                    // return res.status(201).json(newEmployee);
+                    return res.status(200).json(newEmp);
                 }
                 catch (e) {
                     return res.status(500).send(e.message);
                 }
             }
+            else {
+                return res.json({ "error": isValidated });
+            }
         });
-        // // DELETE employees/:id
+        // DELETE employees/:id
         this.deleteEmployee = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = parseInt(req.params.id, 10);
-                // const employee = await employeeService.remove(id);
-                yield employeeService.remove(id);
-                // if (!employee) {
-                // return res.status(404).json({ "error": `Employee not found with given id ${id}` });
-                // }
-                return res.status(201).json({ "message": `Employee deleted with id ${id}` });
+                console.log("ididid", id);
+                if (id === 1 || id === 2) {
+                    return res.json({ "error": "Can not delete manager" });
+                }
+                const employee = yield employeeService.remove(id);
+                if (!employee) {
+                    return res.status(404).json({ "error": validationErrors_1.constants.NO_EMPLOYEE_FOUND });
+                }
+                return res.status(200).json({ "message": validationErrors_1.constants.EMPLOYEE_DELETE_ERROR });
             }
             catch (e) {
                 return res.status(500).send(e.message);
@@ -102,8 +121,8 @@ class EmployeeController {
             try {
                 const id = parseInt(req.params.id, 10);
                 const employees = yield employeeService.getSubordinate(id);
-                if (!employees || Object.keys(employees).length == 0) {
-                    return res.status(404).json({ "error": "There are no employees under this user id" });
+                if (Object.keys(employees).length === 0) {
+                    return res.status(404).json({ "error": validationErrors_1.constants.SUBORDINATE_ERROR });
                 }
                 return res.status(200).json(employees);
             }
@@ -111,29 +130,7 @@ class EmployeeController {
                 return res.status(500).send(e.message);
             }
         });
-        this.validator = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const emailReg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            const phoneReg = /^\d{10}$/;
-            const enums = Object.values(enums_1.EnumEmployee);
-            let validationError = false;
-            if (!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.phone_no || !req.body.level || !req.body.manager) {
-                res.status(400).json({ "Error": "Please pass all required attributes in the body" });
-                validationError = true;
-            }
-            if (!emailReg.test(req.body.email)) {
-                res.status(400).json({ "Error": "email is not valid" });
-                validationError = true;
-            }
-            if (!phoneReg.test(req.body.phone_no)) {
-                res.status(400).json({ "Error": "Phone no is not valid" });
-                validationError = true;
-            }
-            if (!enums.includes(req.body.level)) {
-                res.status(400).json({ "Error": "Level is not valid" });
-                validationError = true;
-            }
-            return validationError;
-        });
+        this.fService = new FileService_services_1.default();
     }
 }
 exports.default = EmployeeController;
